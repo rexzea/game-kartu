@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Match Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #FF5733, #C70039);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-gap: 15px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+        }
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #FFC300;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: transform 0.5s;
+        }
+        .card.flipped {
+            background-color: #DAF7A6;
+            transform: rotateY(180deg);
+        }
+        .hidden {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="card" data-value="1">1</div>
+        <div class="card" data-value="2">2</div>
+        <div class="card" data-value="3">3</div>
+        <div class="card" data-value="4">4</div>
+        <div class="card" data-value="1">1</div>
+        <div class="card" data-value="2">2</div>
+        <div class="card" data-value="3">3</div>
+        <div class="card" data-value="4">4</div>
+    </div>
+
+    <script>
+        const cards = document.querySelectorAll('.card');
+        let flippedCard = null;
+        let lockBoard = false;
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === flippedCard) return;
+
+            this.classList.add('flipped');
+
+            if (!flippedCard) {
+                flippedCard = this;
+                return;
+            }
+
+            if (this.dataset.value === flippedCard.dataset.value) {
+                this.classList.add('hidden');
+                flippedCard.classList.add('hidden');
+                resetBoard();
+            } else {
+                lockBoard = true;
+                setTimeout(() => {
+                    this.classList.remove('flipped');
+                    flippedCard.classList.remove('flipped');
+                    resetBoard();
+                }, 1000);
+            }
+        }
+
+        function resetBoard() {
+            [flippedCard, lockBoard] = [null, false];
+        }
+
+        (function shuffle() {
+            cards.forEach(card => {
+                let randomPos = Math.floor(Math.random() * 8);
+                card.style.order = randomPos;
+            });
+        })();
+
+        cards.forEach(card => card.addEventListener('click', flipCard));
+    </script>
+</body>
+</html>
